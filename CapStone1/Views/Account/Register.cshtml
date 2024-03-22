@@ -1,0 +1,12 @@
+﻿<!-- Register.cshtml -->
+@model CapStone1.ViewModels.RegisterViewModel
+
+<form asp-action="Register" method="post">
+    <label for="Username">Username</label>
+    <input type="text" id="Username" name="Username" required />
+    <label for="Password">Password</label>
+    <input type="password" id="Password" name="Password" required />
+    <label for="ConfirmPassword">Confirm Password</label>
+    <input type="password" id="ConfirmPassword" name="ConfirmPassword" required />
+    <button type="submit">Register</button>
+</form>

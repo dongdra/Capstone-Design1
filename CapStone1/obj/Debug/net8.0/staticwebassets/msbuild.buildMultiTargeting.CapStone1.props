@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\build\CapStone1.props" />
+</Project>

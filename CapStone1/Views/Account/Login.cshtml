@@ -1,0 +1,10 @@
+﻿<!-- Login.cshtml -->
+@model CapStone1.ViewModels.LoginViewModel
+
+<form asp-action="Login" method="post">
+    <label for="Username">Username</label>
+    <input type="text" id="Username" name="Username" required />
+    <label for="Password">Password</label>
+    <input type="password" id="Password" name="Password" required />
+    <button type="submit">Login</button>
+</form>
