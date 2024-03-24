@@ -1,0 +1,25 @@
+﻿/* Login.css */
+.container {
+    width: 95%;
+}
+
+.Login-flex-container
+{
+    margin-top:5%;
+}
+
+.login-card-title
+{
+    text-align:center;
+    font-size : 32px;
+}
+
+.login-button-custom {
+    text-align: center;
+}
+
+.register-link {
+    margin-top: 2%;
+    text-align: center;
+    font-size: 15px;
+}
