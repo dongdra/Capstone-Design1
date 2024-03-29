@@ -1,20 +1,36 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+// App.js
+import React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import { Provider as PaperProvider } from 'react-native-paper';
+import BottomTabNavigator from './components/BottomTabNavigator';
+import Topbar from './components/Topbar';
+import { TabProvider } from './components/TabContext'; 
+import { GestureHandlerRootView } from 'react-native-gesture-handler'; 
+
+const Stack = createStackNavigator();
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text>기본틀 완성</Text>
-      <StatusBar style="auto" />
-    </View>
+    <PaperProvider>
+      <TabProvider>
+        <NavigationContainer>
+          <Stack.Navigator screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="Home" component={HomeComponent} />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </TabProvider>
+    </PaperProvider>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+const HomeComponent = () => (
+  <GestureHandlerRootView style={{ flex: 1 }}> 
+    <Topbar />
+    <BottomTabNavigator />
+  </GestureHandlerRootView>
+);
+
+
+
+
