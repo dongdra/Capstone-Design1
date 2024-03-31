@@ -34,14 +34,6 @@ const Home = () => {
 
       <Card style={styles.card}>
         <CardTitleWithIcon
-          title="여행 일지 작성"
-          subtitle="나만의 여행 기록"
-          LeftIconComponent={TravelJournalIcon}
-        />
-      </Card>
-
-      <Card style={styles.card}>
-        <CardTitleWithIcon
           title="카카오맵"
           subtitle="지도로 길 찾기"
           LeftIconComponent={KakaoMapIcon}

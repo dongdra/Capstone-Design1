@@ -25,13 +25,6 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
 
-  Logoutbutton: {
-    textAlign: 'center',
-    width: '90%',
-    marginTop: 10,
-    marginBottom: 10,
-  },
-
   Closebutton: {
     textAlign: 'center',
     width: '90%',
@@ -53,9 +46,6 @@ const SettingsModal = ({ visible, onClose }) => {
           <Text style={styles.title}>설정</Text>
           <Button mode="contained" onPress={handleSignUp}style={styles.Settingbutton}>
             설정하기
-          </Button>
-          <Button mode="outlined" onPress={() => console.log('Logout clicked')} style={styles.Logoutbutton}>
-            로그아웃
           </Button>
           <Button mode="contained" onPress={onClose} style={styles.Closebutton}>
           닫기

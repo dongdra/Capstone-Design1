@@ -1,70 +1,41 @@
 // BottomTabNavigator.js
 import React, { useState } from 'react';
-import { Dimensions } from 'react-native';
-import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
-import { useTab } from './TabContext';
-import CalendarPage from '../pages/CalendarPage';
+import { BottomNavigation } from 'react-native-paper';
+import WritePage from '../pages/WritePage';
 import Home from '../pages/Home';
 import SearchPage from '../pages/SearchPage';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
-const initialLayout = { width: Dimensions.get('window').width };
-
 const BottomTabNavigator = () => {
+  const WriteRoute = () => <WritePage />;
+  const HomeRoute = () => <Home />;
+  const SearchRoute = () => <SearchPage />;
+
   const [index, setIndex] = useState(0);
-  const { setTitle } = useTab();
   const [routes] = useState([
-    { key: 'CalendarPage', title: '캘린더', icon: 'calendar' },
-    { key: 'home', title: 'Home', icon: 'home' },
-    { key: 'SearchPage', title: '검색', icon: 'magnify' }
+    { key: 'write', title: '민원 작성하기', icon: 'equal-box', color: '#3F51B5' },
+    { key: 'home', title: 'Home', icon: 'home', color: '#009688' },
+    { key: 'search', title: '쓰레기통 검색', icon: 'magnify', color: '#795548' },
   ]);
 
-  const renderScene = SceneMap({
-    CalendarPage: CalendarPage,
-    home: Home,
-    SearchPage: SearchPage,
+
+  const renderScene = BottomNavigation.SceneMap({
+    write: WriteRoute,
+    home: HomeRoute,
+    search: SearchRoute,
   });
 
-  const renderTabBar = props => (
-    <TabBar
-      {...props}
-      renderIcon={({ route, focused, color }) => (
-        <MaterialCommunityIcons
-          name={route.icon}
-          size={26}
-          color={color}
-        />
-      )}
-      activeColor="black"
-      inactiveColor="gray"
-      style={{ backgroundColor: 'white', borderTopColor: 'black', borderTopWidth: 1 }}
-    />
+  const renderIcon = ({ route, focused, color }) => (
+    <MaterialCommunityIcons name={route.icon} size={24} color={color} />
   );
 
-  const handleIndexChange = (newIndex) => {
-    setIndex(newIndex);
-    switch(newIndex) {
-      case 0:
-        setTitle('캘린더');
-        break;
-      case 1:
-        setTitle('Home');
-        break;
-      case 2:
-        setTitle('검색');
-        break;
-    }
-  };
-
   return (
-    <TabView
+    <BottomNavigation
       navigationState={{ index, routes }}
+      onIndexChange={setIndex}
       renderScene={renderScene}
-      onIndexChange={handleIndexChange}
-      initialLayout={initialLayout}
-      swipeEnabled={true}
-      renderTabBar={renderTabBar}
-      tabBarPosition="bottom" 
+      renderIcon={renderIcon}
+      barStyle={{ backgroundColor: 'white', borderTopWidth: 1, borderTopColor: 'black' }} // 흰색 배경에 검정색 선 추가
     />
   );
 };
