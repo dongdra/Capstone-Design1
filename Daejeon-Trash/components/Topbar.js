@@ -1,14 +1,14 @@
 // Topbar.js
-import React, { useState } from 'react';
+import React, { useState } from 'react'; // useState를 사용하기 위해 React에서 불러오기
 import { Appbar } from 'react-native-paper';
 import { View, TouchableOpacity } from 'react-native';
-import { useTab } from './TabContext'; 
+import { useTab } from './TabContext'; // TabContext에서 useTab 가져오기
 import SettingsModal from '../modal/SettingsModal';
 
 const Topbar = () => {
-  const { title } = useTab(); 
+  const { title } = useTab(); // TabProvider에서 title 가져오기
   const goBack = () => console.log('Went back');
-  const [isSettingsModalVisible, setIsSettingsModalVisible] = useState(false); // 모달 상태
+  const [isSettingsModalVisible, setIsSettingsModalVisible] = useState(false); // useState 사용
 
   return (
     <>
@@ -29,4 +29,3 @@ const Topbar = () => {
 };
 
 export default Topbar;
-
