@@ -1,124 +1,171 @@
-import React from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
-import { WebView } from 'react-native-webview';
-import { Avatar, Card, IconButton } from 'react-native-paper';
+//Home.js
+import React, { useState, useEffect, useRef } from 'react';
+import { ScrollView, StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import MapView, { UrlTile, Marker } from "react-native-maps";
+import * as Location from 'expo-location';
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  card: {
-    margin: 10,
-  },
-  cardTitle: {
-    padding: 10,
-  },
-  myMap: {
-    flex: 2,
+  MapContainer: {
+    flex: 1,                    
     backgroundColor: "white",
-    width: "100%",
     marginTop: 30,
     marginBottom: 30,
+    alignItems: 'center',       
+    justifyContent: 'center',   
   },
-  map: {
-    width: "100%",
-    height: 300, // 높이를 고정 값으로 설정
+  MapStyle: {
+    width: "90%",              
+    height: 370,
   },
-  webViewMap: {
-    height: 300, // WebView 지도의 높이를 설정
-    width: "100%",
-    marginTop: 20,
-  }
+  zoomButtonContainer: {
+    position: 'absolute',
+    flexDirection: 'column',   
+    top: 5,                    // 위쪽 여백 설정
+    left: 20,                   // 왼쪽 여백 설정
+  },
+  zoomButton: {
+    backgroundColor: 'rgba(255, 255, 255, 0.7)',
+    width: 40,
+    height: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 5,          // 아래쪽 간격 추가
+  },
+  buttonText: {
+    fontSize: 24,
+    fontWeight: 'bold',
+  },
 });
 
-const KakaoMapIcon = props => <Avatar.Icon {...props} icon="map" />;
-
-const CardTitleWithIcon = ({ title, subtitle, LeftIconComponent }) => (
-  <Card.Title
-    title={title}
-    subtitle={subtitle}
-    left={props => <LeftIconComponent {...props} />}
-    right={props => <IconButton {...props} icon="dots-vertical" onPress={() => {}} />}
-    style={styles.cardTitle}
-  />
-);
-
 const Home = () => {
-  let location = {
-    latitude: 23.259933,
-    longitude: 77.412613,
-    latitudeDelta: 0.009,
-    longitudeDelta: 0.009,
+  const [location, setLocation] = useState(null);
+  const [trashcans, setTrashcans] = useState([]); // 쓰레기통 위치 상태
+  const [zoomLevel, setZoomLevel] = useState(10); // 초기 줌 레벨 설정
+  const mapRef = useRef(null);
+
+  useEffect(() => {
+    getLocationAsync();
+    fetchTrashcans(); // 백엔드에서 쓰레기통 위치 데이터를 가져오는 함수 호출
+  }, []);
+
+  const getLocationAsync = async () => {
+    let { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== 'granted') {
+      console.error('Location permission not granted');
+      return;
+    }
+    let currentLocation = await Location.getCurrentPositionAsync({});
+    setLocation(currentLocation.coords);
+    
+    // 현재 위치를 가져온 후, 지도의 뷰를 현재 위치로 이동
+    if (mapRef.current) {
+      mapRef.current.animateCamera({
+        center: {
+          latitude: currentLocation.coords.latitude,
+          longitude: currentLocation.coords.longitude,
+        },
+        zoom: zoomLevel, // 현재 설정된 줌 레벨을 유지하거나, 필요에 따라 적절한 줌 레벨로 조정
+      });
+    }
+  }; 
+
+  const fetchTrashcans = async () => {
+    // 백엔드 API 엔드포인트로부터 쓰레기통 위치 정보를 가져옵니다.
+    try {
+      const response = await fetch('http://192.168.0.53:3000/api/trashcans', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        // 필요한 경우 추가 데이터를 본문에 포함시킵니다.
+        body: JSON.stringify({}),
+      });
+      const data = await response.json();
+      setTrashcans(data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+    
+    // 현재 위치를 가져온 후, 지도의 뷰를 현재 위치로 이동
+   
+
+  const handleZoomIn = () => {
+    const newZoomLevel = zoomLevel + 1; // 줌 인할 때마다 줌 레벨을 1 증가
+    setZoomLevel(newZoomLevel); // 새로운 줌 레벨 상태 업데이트
+    if (mapRef.current) {
+      mapRef.current.animateCamera({
+        center: location ? {
+          latitude: location.latitude,
+          longitude: location.longitude,
+        } : {
+          latitude: 37.78825,
+          longitude: -122.4324,
+        },
+        zoom: newZoomLevel,
+      });
+    }
+  };
+
+  const handleZoomOut = () => {
+    const newZoomLevel = zoomLevel - 1; // 줌 아웃할 때마다 줌 레벨을 1 감소
+    setZoomLevel(newZoomLevel); // 새로운 줌 레벨 상태 업데이트
+    if (mapRef.current) {
+      mapRef.current.animateCamera({
+        center: location ? {
+          latitude: location.latitude,
+          longitude: location.longitude,
+        } : {
+          latitude: 37.78825,
+          longitude: -122.4324,
+        },
+        zoom: newZoomLevel,
+      });
+    }
   };
 
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.myMap}>
+    <ScrollView>
+      <View style={styles.MapContainer}>
         <MapView
-          region={location}
-          rotateEnabled={false}
-          showsUserLocation
-          style={styles.map}
+          ref={mapRef}
+          initialRegion={{
+            latitude: location ? location.latitude : 37.5665, // 대전의 기본 위도
+            longitude: location ? location.longitude : 126.9780, // 대전의 기본 경도
+            latitudeDelta: 0.0922,
+            longitudeDelta: 0.0421,
+          }}
+          rotateEnabled={true}
+          showsUserLocation={true}
+          style={styles.MapStyle}
         >
-          <UrlTile
-            urlTemplate="https://a.tile.openstreetmap.de/tiles/osmde/{z}/{x}/{y}.png"
-            maximumZ={19}
-          />
-          <Marker
-            title="Home"
-            coordinate={{
-              latitude: location.latitude,
-              longitude: location.longitude,
-            }}
-          />
+          {/* 쓰레기통 위치를 지도에 마커로 표시 */}
+          {trashcans.map((trashcan, index) => (
+            <Marker
+              key={index}
+              title={trashcan.name}
+              description={trashcan.description}
+              coordinate={{
+                latitude: trashcan.latitude,
+                longitude: trashcan.longitude,
+              }}
+            />
+          ))}
         </MapView>
-      </View>
-      <Card style={styles.card}>
-        <CardTitleWithIcon
-          title="카카오맵"
-          subtitle="지도로 길 찾기"
-          LeftIconComponent={KakaoMapIcon}
-        />
-      </Card>
-      <View style={styles.webViewMap}>
-        <WebView
-          originWhitelist={['*']}
-          source={{ html: `
-            <!DOCTYPE html>
-            <html>
-            <head>
-              <title>Simple Map</title>
-              <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width" />
-              <link rel="stylesheet" href="https://openlayers.org/en/v4.6.5/css/ol.css" type="text/css">
-              <script src="https://openlayers.org/en/v4.6.5/build/ol.js" type="text/javascript"></script>
-              <style>
-                .map { height: 100%; width: 100%; }
-              </style>
-            </head>
-            <body>
-              <div id="map" class="map"></div>
-              <script type="text/javascript">
-                var map = new ol.Map({
-                  target: 'map',
-                  layers: [
-                    new ol.layer.Tile({
-                      source: new ol.source.OSM()
-                    })
-                  ],
-                  view: new ol.View({
-                    center: ol.proj.fromLonLat([${location.longitude}, ${location.latitude}]),
-                    zoom: 15
-                  })
-                });
-              </script>
-            </body>
-            </html>
-          ` }}
-        />
+        {/* 확대와 축소 버튼 */}
+        <View style={styles.zoomButtonContainer}>
+          <TouchableOpacity style={styles.zoomButton} onPress={handleZoomIn}>
+            <Text style={styles.buttonText}>+</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.zoomButton} onPress={handleZoomOut}>
+            <Text style={styles.buttonText}>-</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </ScrollView>
   );
-};
+}
+
 
 export default Home;
