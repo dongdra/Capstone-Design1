@@ -13,11 +13,11 @@ const BottomTabNavigator = () => {
   const HomeRoute = () => <Home />;
   const SearchRoute = () => <SearchPage />;
 
-  const [index, setIndex] = useState(0);
+  const [index, setIndex] = useState(1);
   const [routes] = useState([
     { key: 'write', title: '민원 작성하기', icon: 'equal-box', color: '#FFFFFF' },
     { key: 'home', title: 'Home', icon: 'home', color: '#FFFFFF' },
-    { key: 'search', title: '쓰레기통 검색', icon: 'magnify', color: '#FFFFFF' },
+    { key: 'search', title: '쓰레기통 추천', icon: 'assistant', color: '#FFFFFF' },
   ]);
 
   const theme = useTheme();
@@ -49,7 +49,7 @@ const BottomTabNavigator = () => {
         setTitle('Home');
         break;
       case 2:
-        setTitle('쓰레기통 검색');
+        setTitle('쓰레기통 추천');
         break;
       default:
         setTitle('Home');

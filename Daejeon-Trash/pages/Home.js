@@ -1,27 +1,28 @@
 //Home.js
 import React, { useState, useEffect, useRef } from 'react';
-import { ScrollView, StyleSheet, View, Text, TouchableOpacity } from 'react-native';
-import MapView, { UrlTile, Marker } from "react-native-maps";
+import { ScrollView, StyleSheet, View, Text, TouchableOpacity, Image } from 'react-native';
+import MapView, { Marker } from "react-native-maps";
 import * as Location from 'expo-location';
 
+//스타일 정의
 const styles = StyleSheet.create({
   MapContainer: {
-    flex: 1,                    
+    flex: 1,
     backgroundColor: "white",
     marginTop: 30,
     marginBottom: 30,
-    alignItems: 'center',       
-    justifyContent: 'center',   
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   MapStyle: {
-    width: "90%",              
-    height: 370,
+    width: "90%",
+    height: 390,
   },
   zoomButtonContainer: {
     position: 'absolute',
-    flexDirection: 'column',   
-    top: 5,                    // 위쪽 여백 설정
-    left: 20,                   // 왼쪽 여백 설정
+    flexDirection: 'column',
+    top: 5,
+    left: 20,
   },
   zoomButton: {
     backgroundColor: 'rgba(255, 255, 255, 0.7)',
@@ -29,23 +30,28 @@ const styles = StyleSheet.create({
     height: 40,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 5,          // 아래쪽 간격 추가
+    marginBottom: 5,
   },
   buttonText: {
     fontSize: 24,
     fontWeight: 'bold',
   },
+  markerImage: {
+    width: 35,
+    height: 45,
+  },
 });
 
+//Home 컴포넌트
 const Home = () => {
   const [location, setLocation] = useState(null);
-  const [trashcans, setTrashcans] = useState([]); // 쓰레기통 위치 상태
-  const [zoomLevel, setZoomLevel] = useState(10); // 초기 줌 레벨 설정
+  const [trashcans, setTrashcans] = useState([]);
+  const [zoomLevel, setZoomLevel] = useState(10);
   const mapRef = useRef(null);
 
   useEffect(() => {
     getLocationAsync();
-    fetchTrashcans(); // 백엔드에서 쓰레기통 위치 데이터를 가져오는 함수 호출
+    fetchTrashcans();
   }, []);
 
   const getLocationAsync = async () => {
@@ -56,28 +62,24 @@ const Home = () => {
     }
     let currentLocation = await Location.getCurrentPositionAsync({});
     setLocation(currentLocation.coords);
-    
-    // 현재 위치를 가져온 후, 지도의 뷰를 현재 위치로 이동
     if (mapRef.current) {
       mapRef.current.animateCamera({
         center: {
           latitude: currentLocation.coords.latitude,
           longitude: currentLocation.coords.longitude,
         },
-        zoom: zoomLevel, // 현재 설정된 줌 레벨을 유지하거나, 필요에 따라 적절한 줌 레벨로 조정
+        zoom: zoomLevel,
       });
     }
-  }; 
+  };
 
   const fetchTrashcans = async () => {
-    // 백엔드 API 엔드포인트로부터 쓰레기통 위치 정보를 가져옵니다.
     try {
-      const response = await fetch('http://192.168.0.53:3000/api/trashcans', {
+      const response = await fetch('http://172.30.1.79:3000/api/trashcans', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        // 필요한 경우 추가 데이터를 본문에 포함시킵니다.
         body: JSON.stringify({}),
       });
       const data = await response.json();
@@ -87,13 +89,9 @@ const Home = () => {
     }
   };
 
-    
-    // 현재 위치를 가져온 후, 지도의 뷰를 현재 위치로 이동
-   
-
   const handleZoomIn = () => {
-    const newZoomLevel = zoomLevel + 1; // 줌 인할 때마다 줌 레벨을 1 증가
-    setZoomLevel(newZoomLevel); // 새로운 줌 레벨 상태 업데이트
+    const newZoomLevel = zoomLevel + 1;
+    setZoomLevel(newZoomLevel);
     if (mapRef.current) {
       mapRef.current.animateCamera({
         center: location ? {
@@ -109,8 +107,8 @@ const Home = () => {
   };
 
   const handleZoomOut = () => {
-    const newZoomLevel = zoomLevel - 1; // 줌 아웃할 때마다 줌 레벨을 1 감소
-    setZoomLevel(newZoomLevel); // 새로운 줌 레벨 상태 업데이트
+    const newZoomLevel = zoomLevel - 1;
+    setZoomLevel(newZoomLevel);
     if (mapRef.current) {
       mapRef.current.animateCamera({
         center: location ? {
@@ -128,11 +126,12 @@ const Home = () => {
   return (
     <ScrollView>
       <View style={styles.MapContainer}>
+      {/* 지도*/}
         <MapView
           ref={mapRef}
           initialRegion={{
-            latitude: location ? location.latitude : 37.5665, // 대전의 기본 위도
-            longitude: location ? location.longitude : 126.9780, // 대전의 기본 경도
+            latitude: location ? location.latitude : 37.5665,
+            longitude: location ? location.longitude : 126.9780,
             latitudeDelta: 0.0922,
             longitudeDelta: 0.0421,
           }}
@@ -140,7 +139,20 @@ const Home = () => {
           showsUserLocation={true}
           style={styles.MapStyle}
         >
-          {/* 쓰레기통 위치를 지도에 마커로 표시 */}
+          {/* 마커 표시 */}
+          {location && (
+            <Marker
+              coordinate={{
+                latitude: location.latitude,
+                longitude: location.longitude,
+              }}
+            >
+              <Image 
+                source={require('../assets/postion.png')}
+                style={styles.markerImage}
+              />
+            </Marker>
+          )}
           {trashcans.map((trashcan, index) => (
             <Marker
               key={index}
@@ -153,7 +165,6 @@ const Home = () => {
             />
           ))}
         </MapView>
-        {/* 확대와 축소 버튼 */}
         <View style={styles.zoomButtonContainer}>
           <TouchableOpacity style={styles.zoomButton} onPress={handleZoomIn}>
             <Text style={styles.buttonText}>+</Text>
@@ -166,6 +177,5 @@ const Home = () => {
     </ScrollView>
   );
 }
-
 
 export default Home;

@@ -4,21 +4,15 @@ import { Button, TextInput, Provider } from 'react-native-paper';
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    backgroundColor:'white',
     padding: 16, // 전체적인 패딩 조정
   },
-  title: {
-    fontSize: 24, // 제목 글씨 크기 조정
-    fontWeight: 'bold',
-    alignSelf: 'flex-start', // 제목을 왼쪽 정렬
-    marginBottom: 8, // 여백 조정
-  },
-  input: {
+  Categoryinput: {
     width: '100%', // 전체 너비 사용
-    height: 58, // 입력 필드 높이 조정
+    height: 65, //
     marginBottom: 8, // 입력 필드 아래쪽 여백 조정
   },
-  textarea: {
+  Contentarea: {
     marginTop: '5%',
     width: '100%', // 전체 너비 사용
     height: 350, // 입력 필드 높이 조정
@@ -41,30 +35,33 @@ const WritePage = () => {
   const [text, setText] = useState('');
 
   return (
-    <Provider>
-      <View style={styles.container}>
-        {/* TextInput for Category Input */}
-        <TextInput
-          label="카테고리 입력"
-          value={category}
-          onChangeText={text => setCategory(text)}
-          style={styles.input}
-        />
-        {/* TextInput for Content Input */}
-        <TextInput
-          label="내용"
-          value={text}
-          onChangeText={text => setText(text)}
-          multiline // 여러 줄 입력 가능하도록 설정
-          numberOfLines={4} // 보여지는 줄 수 설정
-          style={styles.textarea}
-        />
-        {/* Button */}
-        <Button mode="contained" onPress={() => console.log('Pressed')} style={styles.button}>
-          게시하기
-        </Button>
-      </View>
-    </Provider>
+  <Provider>
+  <View style={styles.container}>
+    {/* 카테고리 입력을 위한 TextInput */}
+    <TextInput
+      label="카테고리 입력"
+      value={category}
+      multiline
+      onChangeText={text => setCategory(text)}
+      mode="outlined" // 여기에 스타일 변경
+      style={styles.Categoryinput}
+    />
+    {/* 내용 입력을 위한 TextInput */}
+    <TextInput
+      label="내용"
+      value={text}
+      onChangeText={text => setText(text)}
+      multiline // 여러 줄 입력 가능
+      numberOfLines={6} // 보여지는 줄 수
+      mode="outlined" // 여기에 스타일 변경
+      style={styles.Contentarea}
+    />
+    {/* 버튼 */}
+    <Button mode="contained" onPress={() => console.log('Pressed')} style={styles.button}>
+      게시하기
+    </Button>
+  </View>
+</Provider>
   );
 };
 
