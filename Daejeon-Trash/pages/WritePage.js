@@ -1,68 +1,40 @@
+//WritePage.js
 import React, { useState } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { Button, TextInput, Provider } from 'react-native-paper';
-
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor:'white',
-    padding: 16, // 전체적인 패딩 조정
-  },
-  Categoryinput: {
-    width: '100%', // 전체 너비 사용
-    height: 65, //
-    marginBottom: 8, // 입력 필드 아래쪽 여백 조정
-  },
-  Contentarea: {
-    marginTop: '5%',
-    width: '100%', // 전체 너비 사용
-    height: 350, // 입력 필드 높이 조정
-    textAlignVertical: 'top', // 입력 필드 내부 텍스트를 위쪽 정렬
-    marginBottom: 8, // 입력 필드 아래쪽 여백 조정
-  },
-  button: {
-    marginTop: '10%',
-    width: '100%', // 버튼 너비 조정
-    height: 50, // 버튼 높이 조정
-    justifyContent: 'center', // 버튼 내부 내용을 중앙 정렬
-  },
-  buttonText: {
-    fontSize: 20, // 버튼 텍스트 크기 조정
-  },
-});
+import { SceneMap, TabView, TabBar } from 'react-native-tab-view';
+import NoticePage from './NoticePage';
+import ComplaintPage from './ComplaintPage';
 
 const WritePage = () => {
-  const [category, setCategory] = useState('');
-  const [text, setText] = useState('');
+  const [index, setIndex] = useState(0);
+  const [routes] = useState([
+    { key: 'notice', title: '공지사항' },
+    { key: 'complaint', title: '민원' },
+  ]);
+
+  const renderScene = SceneMap({
+    notice: NoticePage,
+    complaint: ComplaintPage,
+  });
+
+  const renderTabBar = props => (
+    <TabBar
+      {...props}
+      indicatorStyle={{ backgroundColor: 'black' }} // 탭 아래 표시줄 색상
+      style={{ backgroundColor: 'gray' }} // 탭 바의 배경색
+      activeColor='black' // 활성 탭의 글자색
+    />
+  );
 
   return (
-  <Provider>
-  <View style={styles.container}>
-    {/* 카테고리 입력을 위한 TextInput */}
-    <TextInput
-      label="카테고리 입력"
-      value={category}
-      multiline
-      onChangeText={text => setCategory(text)}
-      mode="outlined" // 여기에 스타일 변경
-      style={styles.Categoryinput}
+    <TabView
+      navigationState={{ index, routes }}
+      renderScene={renderScene}
+      onIndexChange={setIndex}
+      renderTabBar={renderTabBar}
     />
-    {/* 내용 입력을 위한 TextInput */}
-    <TextInput
-      label="내용"
-      value={text}
-      onChangeText={text => setText(text)}
-      multiline // 여러 줄 입력 가능
-      numberOfLines={6} // 보여지는 줄 수
-      mode="outlined" // 여기에 스타일 변경
-      style={styles.Contentarea}
-    />
-    {/* 버튼 */}
-    <Button mode="contained" onPress={() => console.log('Pressed')} style={styles.button}>
-      게시하기
-    </Button>
-  </View>
-</Provider>
   );
 };
 
 export default WritePage;
+
+
