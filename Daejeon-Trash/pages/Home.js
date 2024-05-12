@@ -46,7 +46,7 @@ const styles = StyleSheet.create({
 const Home = () => {
   const [location, setLocation] = useState(null);
   const [trashcans, setTrashcans] = useState([]);
-  const [zoomLevel, setZoomLevel] = useState(10);
+  const [zoomLevel, setZoomLevel] = useState(15);
   const mapRef = useRef(null);
 
   useEffect(() => {
@@ -75,7 +75,7 @@ const Home = () => {
 
   const fetchTrashcans = async () => {
     try {
-      const response = await fetch('http://172.30.1.79:3000/api/trashcans', {
+      const response = await fetch('http://172.20.10.2:3000/api/trashcans', {  //
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

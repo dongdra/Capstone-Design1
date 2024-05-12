@@ -1,56 +1,69 @@
-// NoticePage.js 수정
+// NoticePage.js
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Modal, Button, FlatList, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, Modal, TouchableOpacity, Text } from 'react-native';
+import { DataTable } from 'react-native-paper';
 import axios from 'axios';
 
+// 스타일 정의
 const styles = StyleSheet.create({
-  listItem: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: '#e0e0e0',
+  container: {
+    flex: 1,
+    padding: 10,
+  },
+  modalContent: {
+    flex: 1,
     backgroundColor: 'white',
-    marginVertical: 5,
-    borderRadius: 10,
-    elevation: 3,
-    shadowOffset: { width: 1, height: 1 },
-    shadowColor: '#ccc',
-    shadowOpacity: 0.5,
+    padding: 20,
+    paddingTop: 30,
   },
-  idText: {
-    fontWeight: 'bold',
-    fontSize: 23,
-    color: '#aaa',
-    flex: 1, // ID에 필요한 최소 공간 할당
+  section: {
+    marginBottom: 20,
+    padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
   },
-  title: {
+  sectionTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#333',
-    flex: 2, // 제목에 더 많은 공간 할당
+    color: '#444',
+    marginBottom: 5,
   },
-  content: {
-    fontSize: 14,
+  sectionText: {
+    fontSize: 16,
     color: '#666',
-    flex: 3, // 내용에 가장 많은 공간 할당
-  }
- 
+  },
+  closeButton: {
+    alignSelf: 'flex-end',
+    backgroundColor: '#4285F4',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 5,
+    marginTop: 20,
+  },
+  closeButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: '600',
+  },
 });
 
 const NoticePage = () => {
   const [notices, setNotices] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedNotice, setSelectedNotice] = useState(null);
+  const [page, setPage] = useState(0);
+  const [itemsPerPage] = useState(8);
 
   useEffect(() => {
     fetchNotices();
   }, []);
 
+  useEffect(() => {
+    setPage(0);
+  }, [notices, itemsPerPage]);
   const fetchNotices = async () => {
     try {
-      const response = await axios.post('http://172.30.1.79:3000/api/complaints/all');
+      const response = await axios.post('http://172.20.10.2:3000/api/complaints/all'); //172.20.10.2
       setNotices(response.data);
     } catch (error) {
       console.error('Failed to fetch notices:', error);
@@ -62,33 +75,61 @@ const NoticePage = () => {
     setModalVisible(true);
   };
 
-  const renderItem = ({ item }) => (
-    <TouchableOpacity style={styles.listItem} onPress={() => handlePress(item)}>
-       <Text style={styles.idText}>{item.id}</Text>
-      <Text style={styles.title}>{item.title}</Text>
-      <Text style={styles.content}>{item.content}</Text>
-     
-    </TouchableOpacity>
-  );
+  const numberOfPages = Math.ceil(notices.length / itemsPerPage);
+  const from = page * itemsPerPage;
+  const to = Math.min((page + 1) * itemsPerPage, notices.length);
 
   return (
     <View style={styles.container}>
-      <FlatList
-        data={notices}
-        renderItem={renderItem}
-        keyExtractor={item => item.id.toString()}
-      />
-      <Modal
-        animationType="slide"
-        transparent={false}
-        visible={modalVisible}
-        onRequestClose={() => setModalVisible(false)}
-      >
-        <View style={styles.modalContent}>
-          <Text style={styles.modalText}>{selectedNotice?.content}</Text>
-          <Button title="Close" onPress={() => setModalVisible(false)} />
+      <DataTable>
+        <DataTable.Header style={styles.dataTableHeader}>
+          <DataTable.Title>ID</DataTable.Title>
+          <DataTable.Title>제목</DataTable.Title>
+          <DataTable.Title>내용</DataTable.Title>
+        </DataTable.Header>
+
+        {notices.slice(from, to).map(notice => (
+          <DataTable.Row key={notice.id} onPress={() => handlePress(notice)} style={styles.dataTableRow}>
+            <DataTable.Cell>{notice.id}</DataTable.Cell>
+            <DataTable.Cell>{notice.title}</DataTable.Cell>
+            <DataTable.Cell>{notice.content}</DataTable.Cell>
+          </DataTable.Row>
+        ))}
+
+        <View style={styles.paginationContainer}>
+          <DataTable.Pagination
+            page={page}
+            numberOfPages={numberOfPages}
+            onPageChange={(page) => setPage(page)}
+            label={`${from + 1}-${to} of ${notices.length}`}
+          />
         </View>
-      </Modal>
+      </DataTable>
+
+      <Modal
+  animationType="slide"
+  transparent={true}
+  visible={modalVisible}
+  onRequestClose={() => setModalVisible(false)}
+>
+  <View style={styles.modalContent}>
+    <View style={styles.section}>
+      <Text style={styles.sectionTitle}>ID</Text>
+      <Text style={styles.sectionText}>{selectedNotice?.id}</Text>
+    </View>
+    <View style={styles.section}>
+      <Text style={styles.sectionTitle}>제목</Text>
+      <Text style={styles.sectionText}>{selectedNotice?.title}</Text>
+    </View>
+    <View style={styles.section}>
+      <Text style={styles.sectionTitle}>내용</Text>
+      <Text style={styles.sectionText}>{selectedNotice?.content}</Text>
+    </View>
+    <TouchableOpacity style={styles.closeButton} onPress={() => setModalVisible(false)}>
+      <Text style={styles.closeButtonText}>닫기</Text>
+    </TouchableOpacity>
+  </View>
+</Modal>
     </View>
   );
 };

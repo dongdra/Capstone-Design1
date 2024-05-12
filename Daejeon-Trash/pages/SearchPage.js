@@ -21,10 +21,12 @@ const styles = StyleSheet.create({
 // Home 컴포넌트
 const SearchPage = () => {
   const [location, setLocation] = useState(null);
+  const [trashLocations, setTrashLocations] = useState([]);
   const mapRef = useRef(null);
 
   useEffect(() => {
     getLocationAsync();
+    fetchTrashLocations();
   }, []);
 
   const getLocationAsync = async () => {
@@ -43,6 +45,23 @@ const SearchPage = () => {
         },
         zoom: 10,
       });
+    }
+  };
+
+  const fetchTrashLocations = async () => {
+    try {
+      const response = await fetch('http://172.20.10.2:3000/api/newtrashlocations', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        // 요청 본문에 필요한 경우 데이터 전송
+        body: JSON.stringify({}),
+      });
+      const data = await response.json();
+      setTrashLocations(data);
+    } catch (error) {
+      console.error('Error fetching trash locations:', error);
     }
   };
 
@@ -70,6 +89,18 @@ const SearchPage = () => {
             }}
           />
         )}
+
+        {/* 휴지통 위치 마커 표시 */}
+        {trashLocations.map((trashLocation, index) => (
+          <Marker
+            key={index}
+            coordinate={{
+              latitude: parseFloat(trashLocation.latitude),
+              longitude: parseFloat(trashLocation.longitude),
+            }}
+            pinColor="blue" // 마커 색상을 파란색으로 설정
+          />
+        ))}
       </MapView>
     </View>
   );
