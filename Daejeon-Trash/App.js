@@ -5,24 +5,32 @@ import { Provider as PaperProvider } from 'react-native-paper';
 import { BackHandler } from 'react-native';
 import BottomTabNavigator from './components/BottomTabNavigator';
 import Topbar from './components/Topbar';
-import LoginPage from './pages/LoginPage';
+import LoginPage from './LoginPage';
 import { TabProvider } from './components/TabContext';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { NotificationProvider } from './NotificationContext';
+import { StatsNotificationProvider } from './StatsNotificationContext';
 
 const Stack = createStackNavigator();
 
 export default function App() {
   return (
-    <PaperProvider>
-      <TabProvider>
-        <NavigationContainer>
-          <Stack.Navigator screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="Login" component={LoginPage} />
-            <Stack.Screen name="Home" component={HomeComponent} />
-          </Stack.Navigator>
-        </NavigationContainer>
-      </TabProvider>
-    </PaperProvider>
+    <StatsNotificationProvider>
+      <NotificationProvider>
+        <PaperProvider>
+          <TabProvider>
+            <NavigationContainer>
+              <Stack.Navigator screenOptions={{ headerShown: false }}>
+                <Stack.Screen name="Login">
+                  {(props) => <LoginPage {...props} />}
+                </Stack.Screen>
+                <Stack.Screen name="Home" component={HomeComponent} />
+              </Stack.Navigator>
+            </NavigationContainer>
+          </TabProvider>
+        </PaperProvider>
+      </NotificationProvider>
+    </StatsNotificationProvider>
   );
 }
 

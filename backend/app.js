@@ -62,8 +62,9 @@ app.post('/api/trashcans', async (req, res) => {
 app.post('/api/complaints', async (req, res) => {
     const { title, content } = req.body;
     try {
-        const sql = 'INSERT INTO complain_table (title, content) VALUES (?, ?)';
-        const [result] = await pool.query(sql, [title, content]);
+        // solution 컬럼에 NULL 값을 명시적으로 삽입
+        const sql = 'INSERT INTO complain_table (title, content, solution) VALUES (?, ?, NULL)';
+        const [result] = await pool.query(sql, [title, content]); // solution은 이미 NULL로 설정되어 있으므로 전달하지 않아도 됨
         res.status(201).json({ message: 'Complaint added successfully', id: result.insertId });
     } catch (err) {
         console.error(err);
@@ -83,6 +84,31 @@ app.post('/api/complaints/all', async (req, res) => {
     }
 });
 
+//민원을 넣는 엔드포인트
+app.patch('/api/complaints/:id', async (req, res) => {
+    const { id } = req.params;
+    const { solution } = req.body;
+
+    try {
+        // 민원 ID에 해당하는 레코드의 solution을 업데이트
+        const sql = 'UPDATE complain_table SET solution = ? WHERE id = ?';
+        const [result] = await pool.query(sql, [solution, id]);
+
+        if (result.affectedRows === 0) {
+            // 해당 ID를 가진 민원이 없는 경우 클라이언트에 알림
+            return res.status(404).send('No complaint found with the provided ID.');
+        }
+
+        // 성공적으로 업데이트 되었다면, 성공 메시지 반환
+        res.json({ message: 'Solution updated successfully' });
+    } catch (err) {
+        console.error('Database error:', err);
+        // 서버 내부 오류 처리
+        res.status(500).send('Server error');
+    }
+});
+
+
 // 새로운 위치 데이터셋을 조회하는 엔드포인트
 app.post('/api/newtrashlocations', async (req, res) => {
     try {
@@ -93,6 +119,32 @@ app.post('/api/newtrashlocations', async (req, res) => {
         res.status(500).send('Server error');
     }
 });
+
+// 피드백 데이터를 추가하는 엔드포인트
+app.post('/api/feedback', async (req, res) => {
+    const { accuracy, convenience, satisfaction, rating } = req.body;
+    try {
+        const sql = 'INSERT INTO feedback (accuracy, convenience, satisfaction, rating) VALUES (?, ?, ?, ?)';
+        await pool.query(sql, [accuracy, convenience, satisfaction, rating]);
+
+        res.status(201).json({ message: '피드백이 성공적으로 추가되었습니다.' });
+    } catch (err) {
+        console.error('피드백 추가 중 오류 발생:', err);
+        res.status(500).json({ message: '서버 오류 발생', error: err.message });
+    }
+});
+
+// 모든 피드백 데이터를 조회하는 엔드포인트
+app.get('/api/feedbackall', async (req, res) => {
+    try {
+        const [rows] = await pool.query('SELECT * FROM feedback');
+        res.json(rows);
+    } catch (err) {
+        console.error('피드백 데이터를 조회하는 중 오류 발생:', err);
+        res.status(500).json({ message: '서버 오류 발생', error: err.message });
+    }
+});
+
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

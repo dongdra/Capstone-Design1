@@ -7,13 +7,11 @@ import SettingsModal from '../modal/SettingsModal';
 
 const Topbar = () => {
   const { title } = useTab(); // TabProvider에서 title 가져오기
-  const goBack = () => console.log('Went back');
   const [isSettingsModalVisible, setIsSettingsModalVisible] = useState(false); // useState 사용
 
   return (
     <>
       <Appbar.Header style={{ backgroundColor: 'white' }}> 
-      <Appbar.BackAction onPress={goBack} />
         <Appbar.Content title={title}/> 
         <TouchableOpacity onPress={() => setIsSettingsModalVisible(true)}>
           <Appbar.Action icon="dots-vertical" />
@@ -21,9 +19,9 @@ const Topbar = () => {
       </Appbar.Header>
       <View style={{ borderBottomColor: 'black', borderBottomWidth: 1 }} />
       <SettingsModal
-        visible={isSettingsModalVisible}
-        onClose={() => setIsSettingsModalVisible(false)}
-      />
+  visible={isSettingsModalVisible}
+  onClose={() => setIsSettingsModalVisible(false)}
+/>
     </>
   );
 };
