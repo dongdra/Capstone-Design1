@@ -16,4 +16,3 @@
 - Expo
 - Node.js
 - Colab
-- Flask
