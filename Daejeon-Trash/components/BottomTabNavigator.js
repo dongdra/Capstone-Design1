@@ -5,7 +5,6 @@ import WritePage from '../pages/WritePage';
 import Home from '../pages/Home';
 import SearchPage from '../pages/SearchPage';
 import StatisticsPage from '../pages/StatisticsPage';
-StatisticsPage
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from 'react-native-paper';
 import { useTab } from './TabContext'; // TabContext에서 useTab 가져오기

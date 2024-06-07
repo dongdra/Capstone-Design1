@@ -50,13 +50,11 @@ const SearchPage = () => {
 
   const fetchTrashLocations = async () => {
     try {
-      const response = await fetch('http://172.30.1.79:3000/api/newtrashlocations', {
-        method: 'POST',
+      const response = await fetch('http://172.20.10.2:3000/api/newtrashlocations', {
+        method: 'GET', // GET 요청으로 변경
         headers: {
           'Content-Type': 'application/json',
         },
-        // 요청 본문에 필요한 경우 데이터 전송
-        body: JSON.stringify({}),
       });
       const data = await response.json();
       setTrashLocations(data);

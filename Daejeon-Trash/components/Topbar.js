@@ -12,11 +12,11 @@ const Topbar = () => {
   return (
     <>
       <Appbar.Header style={{ backgroundColor: 'white' }}> 
-        <Appbar.Content title={title}/> 
-        <TouchableOpacity onPress={() => setIsSettingsModalVisible(true)}>
-          <Appbar.Action icon="dots-vertical" />
-        </TouchableOpacity>
-      </Appbar.Header>
+  <Appbar.Content title={title} titleStyle={{ textAlign: 'left' }}/> 
+  <TouchableOpacity onPress={() => setIsSettingsModalVisible(true)}>
+    <Appbar.Action icon="dots-vertical" />
+  </TouchableOpacity>
+</Appbar.Header>
       <View style={{ borderBottomColor: 'black', borderBottomWidth: 1 }} />
       <SettingsModal
   visible={isSettingsModalVisible}

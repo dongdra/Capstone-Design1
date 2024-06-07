@@ -43,7 +43,7 @@ const LoginPage = ({ navigation }) => {
 
   const handleSubmit = async () => {
     try {
-      const response = await axios.post('http://172.30.1.79:3000/api/login', { username, password });
+      const response = await axios.post('http://172.20.10.2:3000/api/login', { username, password });
       if (response.status === 200) {
         if (username === '0000' && password === '0000') {
           // 관리자 권한 부여

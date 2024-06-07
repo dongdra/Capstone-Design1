@@ -16,7 +16,7 @@ const StatisticsPage = () => {
   useEffect(() => {
     const fetchFeedback = async () => {
       try {
-        const response = await axios.get('http://172.30.1.79:3000/api/feedbackall');
+        const response = await axios.get('http://172.20.10.2:3000/api/feedbackall');
         const data = response.data;
         setFeedback(data);
         calculateAverages(data);

@@ -7,6 +7,55 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+//Get방식
+
+// 기존 휴지통 위치 데이터를 조회하는 엔드포인트 
+app.get('/api/trashcans', async (req, res) => {
+    try {
+        const [rows] = await pool.query('SELECT * FROM trash_location');
+        res.json(rows);
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Server error');
+    }
+});
+
+// 모든 공지 사항을 조회하는 엔드포인트
+app.get('/api/complaints/all', async (req, res) => {
+    try {
+        const sql = 'SELECT * FROM complain_table ORDER BY id DESC';
+        const [rows] = await pool.query(sql);
+        res.json(rows); // JavaScript 객체를 JSON 형식으로 변환하여 클라이언트로 전송
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Server error');
+    }
+});
+
+// 새로운 위치 데이터셋을 조회하는 엔드포인트
+app.get('/api/newtrashlocations', async (req, res) => {
+    try {
+        const [rows] = await pool.query('SELECT * FROM new_trash_locations');
+        res.json(rows);
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Server error');
+    }
+});
+
+// 모든 피드백 데이터를 조회하는 엔드포인트
+app.get('/api/feedbackall', async (req, res) => {
+    try {
+        const [rows] = await pool.query('SELECT * FROM feedback');
+        res.json(rows);
+    } catch (err) {
+        console.error('피드백 데이터를 조회하는 중 오류 발생:', err);
+        res.status(500).json({ message: '서버 오류 발생', error: err.message });
+    }
+});
+
+//Post방식
+
 //로그인 요청 엔드포인트
 app.post('/api/login', async (req, res) => {
     const { username, password } = req.body;
@@ -46,19 +95,7 @@ app.post('/api/signup', async (req, res) => {
     }
 });
 
-
-// 기존 휴지통 위치 데이터를 조회하는 엔드포인트 
-app.post('/api/trashcans', async (req, res) => {
-    try {
-        const [rows] = await pool.query('SELECT * FROM trash_location');
-        res.json(rows);
-    } catch (err) {
-        console.error(err);
-        res.status(500).send('Server error');
-    }
-});
-
-// 새로운 공지 사항을 추가하는 엔드포인트
+// 공지 사항을 추가하는 엔드포인트
 app.post('/api/complaints', async (req, res) => {
     const { title, content } = req.body;
     try {
@@ -72,17 +109,22 @@ app.post('/api/complaints', async (req, res) => {
     }
 });
 
-// 모든 공지 사항을 조회하는 엔드포인트
-app.post('/api/complaints/all', async (req, res) => {
+// 피드백 데이터를 추가하는 엔드포인트
+app.post('/api/feedback', async (req, res) => {
+    const { accuracy, convenience, satisfaction, rating } = req.body;
     try {
-        const sql = 'SELECT * FROM complain_table ORDER BY id DESC';
-        const [rows] = await pool.query(sql);
-        res.json(rows); // JavaScript 객체를 JSON 형식으로 변환하여 클라이언트로 전송
+        const sql = 'INSERT INTO feedback (accuracy, convenience, satisfaction, rating) VALUES (?, ?, ?, ?)';
+        await pool.query(sql, [accuracy, convenience, satisfaction, rating]);
+
+        res.status(201).json({ message: '피드백이 성공적으로 추가되었습니다.' });
     } catch (err) {
-        console.error(err);
-        res.status(500).send('Server error');
+        console.error('피드백 추가 중 오류 발생:', err);
+        res.status(500).json({ message: '서버 오류 발생', error: err.message });
     }
 });
+
+
+//patch방식
 
 //민원을 넣는 엔드포인트
 app.patch('/api/complaints/:id', async (req, res) => {
@@ -109,41 +151,11 @@ app.patch('/api/complaints/:id', async (req, res) => {
 });
 
 
-// 새로운 위치 데이터셋을 조회하는 엔드포인트
-app.post('/api/newtrashlocations', async (req, res) => {
-    try {
-        const [rows] = await pool.query('SELECT * FROM new_trash_locations');
-        res.json(rows);
-    } catch (err) {
-        console.error(err);
-        res.status(500).send('Server error');
-    }
-});
 
-// 피드백 데이터를 추가하는 엔드포인트
-app.post('/api/feedback', async (req, res) => {
-    const { accuracy, convenience, satisfaction, rating } = req.body;
-    try {
-        const sql = 'INSERT INTO feedback (accuracy, convenience, satisfaction, rating) VALUES (?, ?, ?, ?)';
-        await pool.query(sql, [accuracy, convenience, satisfaction, rating]);
 
-        res.status(201).json({ message: '피드백이 성공적으로 추가되었습니다.' });
-    } catch (err) {
-        console.error('피드백 추가 중 오류 발생:', err);
-        res.status(500).json({ message: '서버 오류 발생', error: err.message });
-    }
-});
 
-// 모든 피드백 데이터를 조회하는 엔드포인트
-app.get('/api/feedbackall', async (req, res) => {
-    try {
-        const [rows] = await pool.query('SELECT * FROM feedback');
-        res.json(rows);
-    } catch (err) {
-        console.error('피드백 데이터를 조회하는 중 오류 발생:', err);
-        res.status(500).json({ message: '서버 오류 발생', error: err.message });
-    }
-});
+
+
 
 
 const PORT = process.env.PORT || 3000;

@@ -64,7 +64,7 @@ const ResponseModal = ({ visible, onClose, notice }) => {
 
   const submitResponse = async () => {
     try {
-      const response = await axios.patch(`http://172.30.1.79:3000/api/complaints/${notice.id}`, { solution: responseText });
+      const response = await axios.patch(`http://172.20.10.2:3000/api/complaints/${notice.id}`, { solution: responseText });
       Alert.alert("전송 완료", "민원 답변이 성공적으로 전송되었습니다.");
       onClose();
     } catch (error) {

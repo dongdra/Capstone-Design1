@@ -38,7 +38,7 @@ const ComplaintPage = () => {
   const submitComplaint = async () => {
     setIsSubmitting(true);
     try {
-      const response = await fetch('http://172.30.1.79:3000/api/complaints', {
+      const response = await fetch('http://172.20.10.2:3000/api/complaints', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

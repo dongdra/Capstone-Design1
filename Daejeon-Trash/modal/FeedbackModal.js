@@ -68,7 +68,7 @@ const FeedbackModal = ({ visible, onClose, initialFeedback }) => {
     }
 
     try {
-      const response = await axios.post('http://172.30.1.79:3000/api/feedback', feedback);
+      const response = await axios.post('http://172.20.10.2:3000/api/feedback', feedback);
 
       if (response.status === 201) {
         Alert.alert('피드백 제출 완료', '피드백이 성공적으로 제출되었습니다.');

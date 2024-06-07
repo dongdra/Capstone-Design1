@@ -146,12 +146,11 @@ const Home = () => {
 
   const fetchTrashcans = async () => {
     try {
-      const response = await fetch('http://172.30.1.79:3000/api/trashcans', {
-        method: 'POST',
+      const response = await fetch('http://172.20.10.2:3000/api/trashcans', {
+        method: 'GET', // GET 메소드로 변경
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({}),
       });
       const data = await response.json();
       setTrashcans(data);

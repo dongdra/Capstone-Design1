@@ -30,7 +30,7 @@ const SignUpModal = ({ visible, onClose }) => {
     if (!validate()) return;
 
     try {
-      const response = await fetch('http://172.30.1.79:3000/api/signup', {
+      const response = await fetch('http://172.20.10.2:3000/api/signup', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

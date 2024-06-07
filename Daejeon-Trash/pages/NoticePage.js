@@ -30,7 +30,7 @@ const NoticePage = () => {
   useEffect(() => {
     const fetchNotices = async () => {
       try {
-        const response = await axios.post('http://172.30.1.79:3000/api/complaints/all');
+        const response = await axios.get('http://172.20.10.2:3000/api/complaints/all');
         setNotices(response.data);
       } catch (error) {
         console.error('Failed to fetch notices:', error);
